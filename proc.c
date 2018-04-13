@@ -221,11 +221,12 @@ fork(void)
   return pid;
 }
 
+//Lab 1 Implementation
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.
 void
-exit(void)
+exit(int status)
 {
   struct proc *curproc = myproc();
   struct proc *p;
@@ -263,6 +264,7 @@ exit(void)
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
+  curproc->exit_status = status;
   sched();
   panic("zombie exit");
 }
