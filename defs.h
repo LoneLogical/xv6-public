@@ -104,7 +104,12 @@ int             pipewrite(struct pipe*, char*, int);
 //PAGEBREAK: 16
 // proc.c
 int             cpuid(void);
+
+//--------------------------------------
+// Lab 1 Implementation
+//
 void            exit(int status);
+//--------------------------------------
 int             fork(void);
 int             growproc(int);
 int             kill(int);
