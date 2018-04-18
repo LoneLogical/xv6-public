@@ -232,7 +232,7 @@ exit(int status)
   struct proc *p;
   int fd;
 
-  //lab1
+   //lab1
   curproc->exit_status = 1;
 
   if(curproc == initproc)

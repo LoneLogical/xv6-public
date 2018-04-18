@@ -60,7 +60,6 @@ struct proc {
 
   //---------------------------------
 
->>>>>>> 2c268cf58c8ed770e308ba52d23712fa2f8bb2e0
 };
 
 // Process memory is laid out contiguously, low addresses first:
