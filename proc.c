@@ -233,7 +233,7 @@ exit(int status)
   int fd;
 
    //lab1
-  curproc->exit_status = 1;
+  curproc->exit_status = status;
 
   if(curproc == initproc)
     panic("init exiting");
@@ -275,8 +275,12 @@ exit(int status)
 
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.
+//    
+// Lab1: if any child terminates, return its exit status
+// FIXME: "process must return -1 if unexpected error occured"
 int
-wait(void)
+wait(int *status) 
+//wait(void)
 {
   struct proc *p;
   int havekids, pid;
@@ -301,7 +305,13 @@ wait(void)
         p->name[0] = 0;
         p->killed = 0;
         p->state = UNUSED;
+
+	//Lab1: "return" terminated child's exit status
+	if (status != 0)
+	  *status = p->exit_status;
+
         release(&ptable.lock);
+
         return pid;
       }
     }
