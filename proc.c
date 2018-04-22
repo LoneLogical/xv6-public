@@ -333,7 +333,6 @@ waitpid(int pid, int *status, int options)
   acquire(&ptable.lock);
   for(;;){
     // Scan through table looking for the pid process.
-    havekids = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 	  if (p->pid != pid) {
 		continue;

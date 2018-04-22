@@ -30,10 +30,10 @@ sys_exit(void)
 int
 sys_wait(void) {
   int *status;
-  if (argint(0, &status) < 0) {
+  if (argptr(0, (char**)&status, 0) < 0) {
 	return -1;
   }
-  return wait(&status);
+  return wait(status);
 }
 
 //Lab 01 Implementation
@@ -46,14 +46,14 @@ sys_waitpid(void)
   if (argint(0, &pid) < 0) {
     return -1;
   }
-  if (argint(1, &status) < 0) {
+  if (argptr(1, (char**)&status, 0) < 0) {
 	return -1;
   }
   if (argint(2, &options) < 0) {
 	return -1;
   }
 
-  return wait(pid, &status, options);
+  return waitpid(pid, status, options);
 }
 
 int
