@@ -109,6 +109,8 @@ int             cpuid(void);
 // Lab 1 Implementation
 //
 void            exit(int status);
+int				wait(int *status);
+int 			waitpid(int pid, int *status, int options);
 //--------------------------------------
 int             fork(void);
 int             growproc(int);
@@ -122,7 +124,6 @@ void            sched(void);
 void            setproc(struct proc*);
 void            sleep(void*, struct spinlock*);
 void            userinit(void);
-int             wait(void);
 void            wakeup(void*);
 void            yield(void);
 

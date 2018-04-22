@@ -50,17 +50,9 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 
-  //---------------------------------
   //Lab 1 Implementation
-  
-  // introducing status for the process
   int exit_status;
-  // --can it be an int?
-  // --should it be introduced into the enum procstate?
 
-  //---------------------------------
-
->>>>>>> 2c268cf58c8ed770e308ba52d23712fa2f8bb2e0
 };
 
 // Process memory is laid out contiguously, low addresses first:

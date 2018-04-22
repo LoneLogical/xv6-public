@@ -233,7 +233,7 @@ exit(int status)
   int fd;
 
   //lab1
-  curproc->exit_status = 1;
+  curproc->exit_status = status;
 
   if(curproc == initproc)
     panic("init exiting");
@@ -272,11 +272,10 @@ exit(int status)
   panic("zombie exit");
 }
 
-
-// Wait for a child process to exit and return its pid.
-// Return -1 if this process has no children.
+//Lab 01
+//
 int
-wait(void)
+wait(int *status)
 {
   struct proc *p;
   int havekids, pid;
@@ -296,6 +295,10 @@ wait(void)
         kfree(p->kstack);
         p->kstack = 0;
         freevm(p->pgdir);
+		if (status != 0) {
+		  *status = p->exit_status;
+		}
+		p->exit_status = 0;
         p->pid = 0;
         p->parent = 0;
         p->name[0] = 0;
@@ -315,6 +318,56 @@ wait(void)
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
+}
+
+// Lab 01 Implementation
+// Wait for specified process to exit and return that pid
+// Return -1 if pid does not exist or error occurs
+int 
+waitpid(int pid, int *status, int options)
+{
+  struct proc *p;
+  struct proc *curproc = myproc();
+  int pid_exists = 0;
+  
+  acquire(&ptable.lock);
+  for(;;){
+    // Scan through table looking for the pid process.
+    havekids = 0;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+	  if (p->pid != pid) {
+		continue;
+	  }
+	  //found the pid
+	  pid_exists = 1;
+	  if (p->state == ZOMBIE) {
+		kfree(p->kstack);
+		p->kstack = 0;
+		freevm(p->pgdir); //page table and phys memory pages in user part
+		p->pid = 0;
+		p->parent = 0;
+		p->name[0] = 0;
+		p->killed = 0;
+		if (status != 0) {
+		  *status = p->exit_status;
+		}
+		p->exit_status = 0;
+		p->state = UNUSED;
+		release(&ptable.lock);
+		return pid;
+	  }
+    }
+
+    // No point waiting if process does not exist.
+    if(!pid_exists || curproc->killed){
+      release(&ptable.lock);
+      return -1;
+    }
+
+    // Wait for pid process to exit. (See wakeup1 call in proc_exit.)
+    sleep(curproc, &ptable.lock); //DOC: wait-sleep
+  }
+
 }
 
 //PAGEBREAK: 42
