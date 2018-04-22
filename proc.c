@@ -295,6 +295,12 @@ wait(int *status)
         continue;
       havekids = 1;
       if(p->state == ZOMBIE){
+  	
+//FIXME: debug
+cprintf("\nWAIT FOUND ZOMBIE CHILD\n");
+if (status == 0)
+  cprintf("Child status was 0\n");	
+
         // Found one.
         pid = p->pid;
         kfree(p->kstack);
@@ -309,6 +315,8 @@ wait(int *status)
 	//Lab1: "return" terminated child's exit status
 	if (status != 0)
 	  *status = p->exit_status;
+	else
+	  status = 0;
 
         release(&ptable.lock);
 

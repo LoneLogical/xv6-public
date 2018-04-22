@@ -108,7 +108,7 @@ int             cpuid(void);
 //--------------------------------------
 // Lab 1 Implementation
 //
-void            exit(int) __atribute__ ((noreturn));
+void            exit(int); //__atribute__ ((noreturn));
 //--------------------------------------
 int             fork(void);
 int             growproc(int);
