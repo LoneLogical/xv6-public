@@ -216,6 +216,9 @@ fork(void)
 
   np->state = RUNNABLE;
 
+  //Lab 01 Implementation
+  np->exit_status = 0;
+
   release(&ptable.lock);
 
   return pid;
@@ -267,7 +270,6 @@ exit(int status)
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
-  curproc->exit_status = status;
   sched();
   panic("zombie exit");
 }
@@ -338,6 +340,10 @@ waitpid(int pid, int *status, int options)
 		continue;
 	  }
 	  //found the pid
+	  if (p == curproc) {
+		  //we're trying to wait for ourselves!
+		  return -1;
+	  }
 	  pid_exists = 1;
 	  if (p->state == ZOMBIE) {
 		kfree(p->kstack);
