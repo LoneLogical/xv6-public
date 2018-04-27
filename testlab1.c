@@ -95,6 +95,9 @@ int waitPid(void){
     return 0;
 }
 
+
+//CS153 Lab01
+// Provideds multiple cases for testing WaitPid function
 int waitPidTestCases(void){	
     int ret_pid, exit_status;
     int i;
@@ -133,8 +136,8 @@ int waitPidTestCases(void){
 			}
 			else {
 				printf(1, " - This is child with PID# %d and I will wait on my own pid %d\n", getpid(), getpid());
-				//ret_pid = waitpid(getpid(), &exit_status, 0);
-				//printf(1, "returned from waitpid with value: %d  and status: %d \n", ret_pid, exit_status);
+				ret_pid = waitpid(getpid(), &exit_status, 0);
+				printf(1, " - Child with PID# %d returned from waitpid with value: %d  and status: %d \n", getpid(), ret_pid, exit_status);
 				exit(0);
 			}
 			/*

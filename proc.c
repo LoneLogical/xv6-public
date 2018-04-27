@@ -235,7 +235,7 @@ exit(int status)
   struct proc *p;
   int fd;
 
-  //lab1
+  // CS153 Lab01
   curproc->exit_status = status;
 
   if(curproc == initproc)
@@ -274,8 +274,10 @@ exit(int status)
   panic("zombie exit");
 }
 
-//Lab 01
-//
+// CS153
+//Lab01
+//Wait for one child to finish, grab its exit_status, return its pid
+//return -1 if no children exist or en error occurs
 int
 wait(int *status)
 {
@@ -297,7 +299,7 @@ wait(int *status)
         kfree(p->kstack);
         p->kstack = 0;
         freevm(p->pgdir);
-		if (status != 0) {
+		if (status != 0) { //check for null status
 		  *status = p->exit_status;
 		}
 		p->exit_status = 0;
@@ -322,7 +324,8 @@ wait(int *status)
   }
 }
 
-// Lab 01 Implementation
+//CS153
+// Lab01 Implementation
 // Wait for specified process to exit and return that pid
 // Return -1 if pid does not exist or error occurs
 int 
@@ -331,7 +334,12 @@ waitpid(int pid, int *status, int options)
   struct proc *p;
   struct proc *curproc = myproc();
   int pid_exists = 0;
-  
+ 
+  if (pid == curproc->pid) {
+	//process trying to wait for itself
+	return -1;
+  }
+
   acquire(&ptable.lock);
   for(;;){
     // Scan through table looking for the pid process.
@@ -340,10 +348,6 @@ waitpid(int pid, int *status, int options)
 		continue;
 	  }
 	  //found the pid
-	  if (p == curproc) {
-		  //we're trying to wait for ourselves!
-		  return -1;
-	  }
 	  pid_exists = 1;
 	  if (p->state == ZOMBIE) {
 		kfree(p->kstack);
@@ -353,7 +357,7 @@ waitpid(int pid, int *status, int options)
 		p->parent = 0;
 		p->name[0] = 0;
 		p->killed = 0;
-		if (status != 0) {
+		if (status != 0) { //handle if the status is null pointer
 		  *status = p->exit_status;
 		}
 		p->exit_status = 0;

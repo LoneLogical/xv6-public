@@ -4,10 +4,11 @@ struct rtcdate;
 // system calls
 int fork(void);
 
-//Lab 01 Implementation
-int exit(int) __attribute__((noreturn));
-int wait(int *status); // Lab 01
-int waitpid(int pid, int *status, int options); //Lab 01
+//CS153
+//Lab01 Implementation
+int exit(int) __attribute__((noreturn)); //CS153 Lab01
+int wait(int *status); // CS153 Lab01
+int waitpid(int pid, int *status, int options); //CS153 Lab01
 int pipe(int*);
 int write(int, void*, int);
 int read(int, void*, int);

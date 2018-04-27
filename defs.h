@@ -106,7 +106,8 @@ int             pipewrite(struct pipe*, char*, int);
 int             cpuid(void);
 
 //--------------------------------------
-// Lab 1 Implementation
+// CS153
+// Lab01 Implementation
 //
 void            exit(int status);
 int				wait(int *status);

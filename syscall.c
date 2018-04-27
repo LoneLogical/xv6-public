@@ -101,10 +101,11 @@ extern int sys_sbrk(void);
 extern int sys_sleep(void);
 extern int sys_unlink(void);
 extern int sys_wait(void);
-extern int sys_waitpid(void);  // Lab 01
+extern int sys_waitpid(void);  // CS153 Lab01
 extern int sys_write(void);
 extern int sys_uptime(void);
 
+//CS153 Lab01 - added sys_waitpid to array 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
 [SYS_exit]    sys_exit,

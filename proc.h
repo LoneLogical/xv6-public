@@ -50,7 +50,8 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 
-  //Lab 1 Implementation
+  //CS153
+  //Lab01 Implementation
   int exit_status;
 
 };

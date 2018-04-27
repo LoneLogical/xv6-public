@@ -13,6 +13,7 @@ sys_fork(void)
   return fork();
 }
 
+//CS153 Lab01
 int
 sys_exit(void)
 {
@@ -26,7 +27,7 @@ sys_exit(void)
 }
 
 
-//Lab 01 Implementation
+//CS153 Lab01 Implementation
 int
 sys_wait(void) {
   int *status;
@@ -36,7 +37,7 @@ sys_wait(void) {
   return wait(status);
 }
 
-//Lab 01 Implementation
+//CS153 Lab01 Implementation
 int 
 sys_waitpid(void)
 {

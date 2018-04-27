@@ -1,0 +1,53 @@
+Lab 1 Report
+Andrew Whitaker, Phillip Park
+
+1.) The following source files updated to provide the arguments for the updated system calls
+ cat.c
+ defs.h
+ echo.c
+ forktest.c
+ grep.c
+ init.c
+ kill.c
+ ln.c
+ ls.c
+ mkdir.c
+ proc.c
+ proc.h
+ rm.c
+ sh.c
+ stressfs.c
+ syscall.c
+ syscall.h
+ sysproc.c
+ trap.c
+ user.h
+ usertests.c
+ usys.S
+ wc.c
+ zombie.c
+
+2.) This is the logging output from the test program which tests our waitpid function. We ensured that functions calling
+	waitpid() correctly return the exit status values returned from the exit of processes on which they are waiting.
+
+
+####################################################
+# This program tests the correctness of your lab#1
+####################################################
+Step 2: testing waitpid(int pid, int* status, int options):
+ - The is child with PID# 37 and I will exit with status 0
+ - The is child with PID# 39 and I will exit with status 0
+ - The is child with PID# 36 and I will exit with status 0
+ - The is child with PID# 38 and I will exit with status 0
+ -  - This is the parent: Now waiting for child with PID# 39
+ - This is the parent: Child# 39 has exited with status 0
+Th - This is the parent: Now waiting for child with PID# 37
+ - This is the parent: Child# 37 has exited with status 0
+e is child with PID# 40 and I will exit with status 0
+ - This is the parent: Now waiting for child with PID# 38
+ - This is the parent: Child# 38 has exited with status 0
+ - This is the parent: Now waiting for child with PID# 36
+ - This is the parent: Child# 36 has exited with status 0
+ - This is the parent: Now waiting for child with PID# 40
+ - This is the parent: Child# 40 has exited with status 0
+
