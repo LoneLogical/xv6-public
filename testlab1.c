@@ -117,7 +117,7 @@ int waitPidTestCases(void){
 				exit(13);
 			}
 			else if (i == 1) {
-				printf(1, " - This is child with PID# %d and I will exit inappropriately by not including a status \n", getpid());
+				printf(1, " - This is child with PID# %d and I will exit with status %d \n", getpid(), 0);
 				exit(0); //should return -1
 			}
 			else if (i == 2) {
