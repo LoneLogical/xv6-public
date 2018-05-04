@@ -22,3 +22,5 @@
 #define SYS_close  21
 //CS153 Lab01
 #define SYS_waitpid   22
+//CS153 Lab02
+#define SYS_altprty   23

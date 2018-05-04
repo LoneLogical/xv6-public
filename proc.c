@@ -376,7 +376,21 @@ waitpid(int pid, int *status, int options)
     // Wait for pid process to exit. (See wakeup1 call in proc_exit.)
     sleep(curproc, &ptable.lock); //DOC: wait-sleep
   }
+}
 
+int
+alt_prty(int nprty)
+{
+  if(nprty < 0 || nprty > 31) {
+    return -1;
+  }
+
+  struct proc *curproc = myproc();
+
+  acquire(&ptable.lock);
+  curproc->priority = nprty;
+  release(&ptable.lock);
+  return 0;
 }
 
 //PAGEBREAK: 42
@@ -399,7 +413,8 @@ scheduler(void)
   for(;;){
     // Enable interrupts on this processor.
     sti();
-	max_priority = -1;
+	max_priority = -1; //resets value 
+	maxp = 0; //reset pointer
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -412,6 +427,11 @@ scheduler(void)
 	  }
     }
 
+	if (maxp == 0) { //could not find a runnable process
+		release(&ptable.lock);
+		continue;
+	}
+	
 	// Switch to chosen process.  It is the process's job
     // to release ptable.lock and then reacquire it
     // before jumping back to us.
@@ -425,8 +445,6 @@ scheduler(void)
     // Process is done running for now.
     // It should have changed its p->state before coming back.
     c->proc = 0;
-
-
     release(&ptable.lock);
 
   }

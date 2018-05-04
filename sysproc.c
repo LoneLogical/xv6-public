@@ -57,6 +57,18 @@ sys_waitpid(void)
   return waitpid(pid, status, options);
 }
 
+//CS153 Lab02 Implementation
+int
+sys_altprty(void)
+{
+	int new_priority;
+	if (argint(0, &new_priority) < 0) {
+		return -1;
+	}
+	
+	return altprty(new_priority);
+}
+
 int
 sys_kill(void)
 {

@@ -113,6 +113,10 @@ void            exit(int status);
 int				wait(int *status);
 int 			waitpid(int pid, int *status, int options);
 //--------------------------------------
+// CS153
+// Lab02 Implementation
+int             altprty(int nprty);
+// -------------------------------------
 int             fork(void);
 int             growproc(int);
 int             kill(int);
