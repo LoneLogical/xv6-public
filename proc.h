@@ -52,7 +52,10 @@ struct proc {
 
   //CS153
   //Lab01 Implementation
-  int exit_status;
+  int exit_status;             // Exit Status of process if it calls Exit()
+
+  //Lab02 Implementation
+  int priority;                // Priority value for scheduler
 
 };
 
