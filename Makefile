@@ -174,6 +174,7 @@ UPROGS=\
 	_wc\
 	_zombie\
 	_testlab1\
+	_testlab2\
 
 
 fs.img: mkfs README $(UPROGS)
@@ -246,6 +247,7 @@ EXTRA=\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
 	printf.c umalloc.c\
 	testlab1.c\
+	testlab2.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 

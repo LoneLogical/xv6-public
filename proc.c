@@ -379,7 +379,7 @@ waitpid(int pid, int *status, int options)
 }
 
 int
-alt_prty(int nprty)
+altprty(int nprty)
 {
   if(nprty < 0 || nprty > 31) {
     return -1;
@@ -405,50 +405,59 @@ void
 scheduler(void)
 {
   struct proc *p;
+  struct proc *p2;
   struct cpu *c = mycpu();
   c->proc = 0;
-  struct proc *maxp;
-  int max_priority = -1;
+  int max_priority = 0;
 
   for(;;){
     // Enable interrupts on this processor.
     sti();
-	max_priority = -1; //resets value 
-	maxp = 0; //reset pointer
-    // Loop over process table looking for process to run.
+	max_priority = 0; //resets value 
+    // Loop over process table looking for highest priority value for
+	// 	  a RUNNABLE process
     acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
+    for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
+      if(p2->state != RUNNABLE)
         continue;
-
-	  if(p->priority > max_priority) {
-		max_priority = p->priority;
-		maxp = p;
+	  if(p2->priority > max_priority) {
+		max_priority = p2->priority;
 	  }
     }
 
-	if (maxp == 0) { //could not find a runnable process
-		release(&ptable.lock);
-		continue;
-	}
-	
-	// Switch to chosen process.  It is the process's job
-    // to release ptable.lock and then reacquire it
-    // before jumping back to us.
-    c->proc = maxp;
-    switchuvm(maxp);
-    maxp->state = RUNNING;
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+	  if(p->state != RUNNABLE || p->priority < max_priority) {
+	    continue;
+	  }
+	  // Switch to chosen process.  It is the process's job
+      // to release ptable.lock and then reacquire it
+      // before jumping back to us.
+      c->proc = p;
+      switchuvm(p);
+      p->state = RUNNING;
 
-    swtch(&(c->scheduler), maxp->context);
-    switchkvm();
+      swtch(&(c->scheduler), p->context);
+      switchkvm();
 
-    // Process is done running for now.
-    // It should have changed its p->state before coming back.
-    c->proc = 0;
+      // Process is done running for now.
+      // It should have changed its p->state before coming back.
+      c->proc = 0;
+
+      //recheck the max priority for the ptable but resume search from 
+	  //   where we left off in the ptable so as not to always unfairly
+	  //   pull from the front or back of the table more often
+      for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
+        if(p2->state != RUNNABLE)
+          continue;
+	    if(p2->priority > max_priority) {
+		  max_priority = p2->priority;
+	    } //end if priority
+      } //end for priority
+	} //end for round robin
     release(&ptable.lock);
-
-  }
+  } //end neverending for loop
 }
+
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state. Saves and restores
