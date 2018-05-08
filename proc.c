@@ -386,6 +386,7 @@ altprty(int nprty)
   }
 
   struct proc *curproc = myproc();
+  struct proc *p;
 
   acquire(&ptable.lock);
   curproc->priority = nprty;
