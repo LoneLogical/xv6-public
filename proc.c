@@ -199,7 +199,10 @@ fork(void)
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
-
+  //CS153 Lab01
+  np->exit_status = 0;
+  //CS153 Lab02
+  np->priority = 0;
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
 
@@ -215,9 +218,6 @@ fork(void)
   acquire(&ptable.lock);
 
   np->state = RUNNABLE;
-
-  //Lab 01 Implementation
-  np->exit_status = 0;
 
   release(&ptable.lock);
 

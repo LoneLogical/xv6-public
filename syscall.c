@@ -105,6 +105,7 @@ extern int sys_waitpid(void);  // CS153 Lab01
 extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_altprty(void);
+extern int sys_yield(void);
 
 //CS153 Lab01 - added sys_waitpid to array 
 static int (*syscalls[])(void) = {
@@ -131,6 +132,7 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_waitpid] sys_waitpid,
 [SYS_altprty] sys_altprty,
+[SYS_yield]   sys_yield
 };
 
 void

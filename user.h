@@ -28,6 +28,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int altprty(int); //CS153 Lab02
+void yield(void);
 
 // ulib.c
 int stat(char*, struct stat*);

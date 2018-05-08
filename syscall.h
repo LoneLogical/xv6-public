@@ -24,3 +24,4 @@
 #define SYS_waitpid   22
 //CS153 Lab02
 #define SYS_altprty   23
+#define SYS_yield     24

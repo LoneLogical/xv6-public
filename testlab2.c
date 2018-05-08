@@ -19,30 +19,51 @@ int main(int argc, char *argv[]) {
 }
  
 int basicTest(void) {
-    int pid;
-	int status;
+    int i, status;
+	int pid_a[5] = {0,0,0,0,0};
 
-	pid = fork();
+	for (i = 0; i < 5; i++) {
+		pid_a[i] = fork();
+		
+		if (pid_a[i] == 0) {
+			if(i == 0) {
+				altprty(30);
+				for(;;) {
+					printf(1, "Process #%d\n",i);
+					yield();
+				}
+			}
+			else if(i == 1) {
+				altprty(30);
+				for(;;) {
+					printf(1, "Process #%d \n",i);
+					yield();
+				}
+			}
+			else if(i == 2) {
+				altprty(30);
+				for(;;) {
+					printf(1, "Process #%d \n",i);
+					yield();
+				}
+			}
+			else if(i == 3) {
+				altprty(2);
+				for(;;) {
+					printf(1, "Process #%d\n",i);
+					yield();
+				}
+			}
+			else {
+				altprty(2);
+				for(;;) {
+					printf(1, "Process #%d: with priority %d \n",i);
+					yield();
+				}
+			}
+		}
+	}
 
-	if (pid == 0) {
-		altprty(13);
-		sleep(1);
-		for(;;) {
-			printf(1, " Child is running.\n");
-		}
-		exit(0);
-	}
-	else if (pid > 0) {
-		altprty(1);
-		sleep(1);
-		for(;;) {
-			printf(1, " Parent is running.\n");
-		}
-	}
-	else {
-		printf(1, "Something went wrong with fork system call.");
-		exit(-1);
-	}
 	wait(&status);
 
 	return 0;
