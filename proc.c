@@ -387,11 +387,24 @@ altprty(int nprty)
 
   struct proc *curproc = myproc();
   struct proc *p;
+  //return 0 if allowed to keep running
+  //return 1 if process should yield to higher priority
+  int ret_val = 0;
 
   acquire(&ptable.lock);
+  if (nprty < curproc->priority) {
+    //need to make sure no processes with higher priority now
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->state != RUNNABLE)
+        continue;
+	  if(p->priority > nprty) {
+		ret_val = 1;
+	  }
+    }
+  }
   curproc->priority = nprty;
   release(&ptable.lock);
-  return 0;
+  return ret_val;
 }
 
 //PAGEBREAK: 42
