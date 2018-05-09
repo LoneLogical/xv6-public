@@ -391,10 +391,8 @@ altprty(int nprty)
   }
 
   struct proc *curproc = myproc();
-  struct proc *p;
   //return 0 if allowed to keep running
-  //return 1 if process should yield to higher priority
-  int ret_val = 0;
+  //return 1 if process yielded to higher priority
 
   acquire(&ptable.lock);
   //Phillip start: check if there is a process with greater priority in the ptable,
@@ -403,7 +401,7 @@ altprty(int nprty)
   curproc->priority   = nprty;
 
   int found_new_highest = 0;
-  if (old_prority > priority) {
+  if (old_priority > nprty) {
     struct proc *p;   
 
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
@@ -447,7 +445,6 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
     max_priority = 0; //resets value 
-    struct proc *max_pri_proc = 0;   
  
     // Loop over process table looking for highest priority value for
     // 	  a RUNNABLE process
@@ -457,20 +454,20 @@ scheduler(void)
         continue;
       if(p2->priority > max_priority) {
         max_priority = p2->priority;
-  
-        //Phillip: if we track the max priority process, 
-        //shouldn't we be able to forgo the next loop?
-        max_pr_proc = p2;
       }
     }
 
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-
-      //Phillip: is there any special handling of processes discovered to have priority
-      //	exceed max?
-      if(p->state != RUNNABLE || p->priority < max_priority) {
+      //skip processes that aren't runnable
+      if(p->state != RUNNABLE) {
         continue;
-      }
+      } //if runnable but not highest priority
+      if(p->priority < max_priority) {
+		//not going to run now, but increase its priority for next time
+        p->priority = p->priority + 1;
+		continue;
+	  }
+
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -484,6 +481,9 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
+		
+      //finally, alter process p's priority because it did run
+	  p->priority = p->priority - 1;
 
       //recheck the max priority for the ptable but resume search from 
       //   where we left off in the ptable so as not to always unfairly

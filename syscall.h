@@ -25,3 +25,4 @@
 //CS153 Lab02
 #define SYS_altprty   23
 #define SYS_yield     24
+#define SYS_getprty   25
