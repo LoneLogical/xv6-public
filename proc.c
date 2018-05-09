@@ -464,7 +464,9 @@ scheduler(void)
       } //if runnable but not highest priority
       if(p->priority < max_priority) {
 		//not going to run now, but increase its priority for next time
-        p->priority = p->priority + 1;
+	    if(p->priority < 31) {
+          p->priority = p->priority + 1;
+		}
 		continue;
 	  }
 
@@ -483,8 +485,9 @@ scheduler(void)
       c->proc = 0;
 		
       //finally, alter process p's priority because it did run
-	  p->priority = p->priority - 1;
-
+	  if(p->priority > 0) {
+	    p->priority = p->priority - 1;
+      }
       //recheck the max priority for the ptable but resume search from 
       //   where we left off in the ptable so as not to always unfairly
       //   pull from the front or back of the table more often
