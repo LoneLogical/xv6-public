@@ -378,9 +378,14 @@ waitpid(int pid, int *status, int options)
   }
 }
 
+//****
+//Lab2
+//****
 int
 altprty(int nprty)
 {
+
+  //Phillip: why use signed values?
   if(nprty < 0 || nprty > 31) {
     return -1;
   }
@@ -392,19 +397,30 @@ altprty(int nprty)
   int ret_val = 0;
 
   acquire(&ptable.lock);
-  if (nprty < curproc->priority) {
-    //need to make sure no processes with higher priority now
-	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
-	  if(p->priority > nprty) {
-		ret_val = 1;
-	  }
+  //Phillip start: check if there is a process with greater priority in the ptable,
+  //	if so, let scheduler handle the context switch
+  int old_priority = curproc->priority;
+  curproc->priority   = nprty;
+
+  int found_new_highest = 0;
+  if (old_prority > priority) {
+    struct proc *p;   
+
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+      if (p->priority > nprty) {
+      	found_new_highest = 1;
+        break;
+      }
+    }
+
+    if (found_new_highest) {
+      release(&ptable.lock);      
+      yield();
+      return 1;
     }
   }
-  curproc->priority = nprty;
   release(&ptable.lock);
-  return ret_val;
+  return 0;
 }
 
 //PAGEBREAK: 42
@@ -422,28 +438,40 @@ scheduler(void)
   struct proc *p2;
   struct cpu *c = mycpu();
   c->proc = 0;
+
+  //FIXME: what happens if all processes in table have 0 priority?
+  //	we need to ensure that some process is still scheduled, in that case
   int max_priority = 0;
 
   for(;;){
     // Enable interrupts on this processor.
     sti();
-	max_priority = 0; //resets value 
+    max_priority = 0; //resets value 
+    struct proc *max_pri_proc = 0;   
+ 
     // Loop over process table looking for highest priority value for
-	// 	  a RUNNABLE process
+    // 	  a RUNNABLE process
     acquire(&ptable.lock);
     for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
       if(p2->state != RUNNABLE)
         continue;
-	  if(p2->priority > max_priority) {
-		max_priority = p2->priority;
-	  }
+      if(p2->priority > max_priority) {
+        max_priority = p2->priority;
+  
+        //Phillip: if we track the max priority process, 
+        //shouldn't we be able to forgo the next loop?
+        max_pr_proc = p2;
+      }
     }
 
-	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-	  if(p->state != RUNNABLE || p->priority < max_priority) {
-	    continue;
-	  }
-	  // Switch to chosen process.  It is the process's job
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+
+      //Phillip: is there any special handling of processes discovered to have priority
+      //	exceed max?
+      if(p->state != RUNNABLE || p->priority < max_priority) {
+        continue;
+      }
+      // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       c->proc = p;
@@ -458,16 +486,16 @@ scheduler(void)
       c->proc = 0;
 
       //recheck the max priority for the ptable but resume search from 
-	  //   where we left off in the ptable so as not to always unfairly
-	  //   pull from the front or back of the table more often
+      //   where we left off in the ptable so as not to always unfairly
+      //   pull from the front or back of the table more often
       for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
         if(p2->state != RUNNABLE)
           continue;
-	    if(p2->priority > max_priority) {
-		  max_priority = p2->priority;
-	    } //end if priority
+        if(p2->priority > max_priority) {
+          max_priority = p2->priority;
+        } //end if priority
       } //end for priority
-	} //end for round robin
+    } //end for round robin
     release(&ptable.lock);
   } //end neverending for loop
 }
