@@ -28,6 +28,8 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int altprty(int); //CS153 Lab02
+int inherit_prty(void);
+int donate_prty(void);
 void yield(void);
 
 // ulib.c

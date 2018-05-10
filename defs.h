@@ -116,6 +116,8 @@ int 			waitpid(int pid, int *status, int options);
 // CS153
 // Lab02 Implementation
 int             altprty(int nprty);
+int             inherit_prty(void);
+int             donate_prty(void);
 // -------------------------------------
 int             fork(void);
 int             growproc(int);

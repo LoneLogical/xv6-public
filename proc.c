@@ -263,6 +263,7 @@ exit(int status)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->parent == curproc){
       p->parent = initproc;
+
       if(p->state == ZOMBIE)
         wakeup1(initproc);
     }
@@ -384,7 +385,6 @@ waitpid(int pid, int *status, int options)
 int
 altprty(int nprty)
 {
-
   //Phillip: why use signed values?
   if(nprty < 0 || nprty > 31) {
     return -1;
@@ -397,10 +397,10 @@ altprty(int nprty)
   //Phillip start: check if there is a process with greater priority in the ptable,
   //	if so, let scheduler handle the context switch
   int old_priority = curproc->priority;
-  curproc->priority   = nprty;
+  curproc->priority = nprty;
 
   int found_new_highest = 0;
-  if (old_prority > priority) {
+  if (old_priority > nprty) {
     struct proc *p;   
 
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
@@ -421,6 +421,41 @@ altprty(int nprty)
   return 0;
 }
 
+//Lab2: 
+//  if calling process has a parent with higher priority, 
+//  the caller will receive their parent's priority 
+int
+inherit_prty() {
+  struct proc *curproc = myproc();
+  acquire(&ptable.lock);
+
+  if (curproc->parent->priority > curproc->priority)
+    curproc->priority = curproc->parent->priority;
+  release(&ptable.lock);
+
+  return 0;
+}
+
+//Lab2: 
+//  if calling process has any children with lower priority,
+//  they will always receive caller's priority
+int
+donate_prty() {
+  struct proc *p;
+  struct proc *curproc = myproc();
+
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if (p->parent != curproc) 
+      continue;
+    if (p->priority < curproc->priority)
+      p->priority = curproc->priority;    
+  }
+  release(&ptable.lock);
+
+  return 0;
+}
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -437,16 +472,13 @@ scheduler(void)
   struct cpu *c = mycpu();
   c->proc = 0;
 
-  //FIXME: what happens if all processes in table have 0 priority?
-  //	we need to ensure that some process is still scheduled, in that case
   int max_priority = 0;
 
   for(;;){
     // Enable interrupts on this processor.
     sti();
     max_priority = 0; //resets value 
-    struct proc *max_pri_proc = 0;   
- 
+
     // Loop over process table looking for highest priority value for
     // 	  a RUNNABLE process
     acquire(&ptable.lock);
@@ -454,11 +486,7 @@ scheduler(void)
       if(p2->state != RUNNABLE)
         continue;
       if(p2->priority > max_priority) {
-        max_priority = p2->priority;
-  
-        //Phillip: if we track the max priority process, 
-        //shouldn't we be able to forgo the next loop?
-        max_pr_proc = p2;
+        max_priority = p2->priority; 
       }
     }
 

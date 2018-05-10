@@ -21,7 +21,9 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 //CS153 Lab01
-#define SYS_waitpid   22
+#define SYS_waitpid 22
 //CS153 Lab02
-#define SYS_altprty   23
-#define SYS_yield     24
+#define SYS_altprty      23
+#define SYS_inherit_prty 24
+#define SYS_donate_prty  25
+#define SYS_yield 26
