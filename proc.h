@@ -56,6 +56,10 @@ struct proc {
 
   //Lab02 Implementation
   int priority;                // Priority value for scheduler
+  int age;
+  int totaltime;
+  int waitingtime;
+  int runningtime;
 
 };
 

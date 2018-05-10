@@ -23,7 +23,9 @@
 //CS153 Lab01
 #define SYS_waitpid 22
 //CS153 Lab02
-#define SYS_altprty      23
-#define SYS_inherit_prty 24
-#define SYS_donate_prty  25
-#define SYS_yield 26
+#define SYS_altprty   23
+#define SYS_yield     24
+#define SYS_getprty   25
+#define SYS_gettimestats 26
+#define SYS_inherit_prty 27
+#define SYS_donate_prty  28

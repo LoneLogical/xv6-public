@@ -108,6 +108,8 @@ extern int sys_altprty(void); // CS153 Lab02
 extern int sys_inherit_prty(void); // CS153 Lab02
 extern int sys_donate_prty(void); //CS153 Lab02
 extern int sys_yield(void);
+extern int sys_getprty(void);
+extern int sys_gettimestats(void); 
 
 //CS153 Lab01 - added sys_waitpid to array 
 static int (*syscalls[])(void) = {
@@ -134,9 +136,11 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_waitpid] sys_waitpid,
 [SYS_altprty] sys_altprty,
+[SYS_yield]   sys_yield,
+[SYS_getprty] sys_getprty,
+[SYS_gettimestats] sys_gettimestats,
 [SYS_inherit_prty] sys_inherit_prty,
-[SYS_donate_prty] sys_donate_prty,
-[SYS_yield] sys_yield
+[SYS_donate_prty] sys_donate_prty
 };
 
 void

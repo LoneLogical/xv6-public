@@ -202,7 +202,11 @@ fork(void)
   //CS153 Lab01
   np->exit_status = 0;
   //CS153 Lab02
-  np->priority = 0;
+  np->priority = 10;
+  np->age = 0;
+  np->totaltime = 0; //start counters
+  np->waitingtime = 0; //start counters
+  np->runningtime = 0;
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
 
@@ -391,9 +395,10 @@ altprty(int nprty)
   }
 
   struct proc *curproc = myproc();
+  //return 0 if allowed to keep running
+  //return 1 if process yielded to higher priority
 
   acquire(&ptable.lock);
-
   //Phillip start: check if there is a process with greater priority in the ptable,
   //	if so, let scheduler handle the context switch
   int old_priority = curproc->priority;
@@ -404,7 +409,7 @@ altprty(int nprty)
     struct proc *p;   
 
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-      if (p->priority > nprty) {
+      if (p->priority + p->age > nprty + curproc->age) {
       	found_new_highest = 1;
         break;
       }
@@ -417,7 +422,6 @@ altprty(int nprty)
     }
   }
   release(&ptable.lock);
-	
   return 0;
 }
 
@@ -478,25 +482,41 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
     max_priority = 0; //resets value 
-
-    // Loop over process table looking for highest priority value for
+    
+	// Loop over process table looking for highest priority value for
     // 	  a RUNNABLE process
     acquire(&ptable.lock);
     for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
       if(p2->state != RUNNABLE)
         continue;
-      if(p2->priority > max_priority) {
-        max_priority = p2->priority; 
+      if(p2->priority + p2->age > max_priority) {
+        max_priority = p2->priority + p2->age;
       }
     }
 
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-
-      //Phillip: is there any special handling of processes discovered to have priority
-      //	exceed max?
-      if(p->state != RUNNABLE || p->priority < max_priority) {
+      if(p->state == SLEEPING || p->state == RUNNABLE) {
+        //these states count toward totaltime
+	    p->totaltime = p->totaltime + 1;
+		//going to preemptively increment now, but decrement later
+		//  if process is chosen to run
+	    p->waitingtime = p->waitingtime + 1;
+	  }
+      //skip processes that aren't runnable
+      if(p->state != RUNNABLE) {
         continue;
-      }
+      } //if runnable but not highest priority
+      if(p->priority + p->age < max_priority) {
+		//not going to run now, but increase its priority for next time
+	    //if(p->priority < 31) {
+          //p->priority = p->priority + 1;
+		//}
+		p->age = p->age + 1;
+		continue;
+	  }
+      //decrement waiting time and add to running time
+      p->waitingtime = p->waitingtime - 1;
+      p->runningtime = p->runningtime + 1;
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -510,15 +530,20 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
-
+		
+      //finally, alter process p's priority because it did run
+	  //if(p->priority > 0) {
+	    //p->priority = p->priority - 1;
+      //}
+	  p->age = 0;
       //recheck the max priority for the ptable but resume search from 
       //   where we left off in the ptable so as not to always unfairly
       //   pull from the front or back of the table more often
       for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){
         if(p2->state != RUNNABLE)
           continue;
-        if(p2->priority > max_priority) {
-          max_priority = p2->priority;
+        if(p2->priority + p2->age > max_priority) {
+          max_priority = p2->priority + p2->age;
         } //end if priority
       } //end for priority
     } //end for round robin
