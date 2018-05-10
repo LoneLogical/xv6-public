@@ -75,14 +75,16 @@ int basicTest(void) {
 
 int philTest(void) {
 	int i;
-	for (i = 0; i < 5; i = i) {
-        	fork();
-		i++;
+	int pids[5] = {0, 0, 0, 0, 0};
 
-		altprty(i);
-		donate_prty();
-		inherit_prty();
+	for (i = 0; i < 5; i++) {
+        	pids[i] = fork();
+
+		if (pids[i] == 0)
+			break;
+			
 	}
+
 	return 0;
 }
 
