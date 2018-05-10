@@ -92,6 +92,19 @@ sys_getprty(void)
 }
 
 int
+sys_gettimestats(void)
+{
+  //gettimestats();
+  struct proc *curproc = myproc();
+  cprintf("Time Stats for process #%d \n",curproc->pid);
+  cprintf(" -- TotalTime: %d \n", curproc->totaltime);
+  cprintf(" -- WaitTime: %d \n", curproc->waitingtime);
+  cprintf(" -- RunningTime: %d \n", curproc->runningtime);
+
+  return 0;
+}
+
+int
 sys_sbrk(void)
 {
   int addr;

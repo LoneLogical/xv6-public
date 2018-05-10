@@ -26,3 +26,4 @@
 #define SYS_altprty   23
 #define SYS_yield     24
 #define SYS_getprty   25
+#define SYS_gettimestats 26

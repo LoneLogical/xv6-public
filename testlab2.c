@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 }
  
 int basicTest(void) {
-    int i, status;
+    int status, i, j;
 	int pid_a[5] = {0,0,0,0,0};
 
 	for (i = 0; i < 5; i++) {
@@ -28,44 +28,50 @@ int basicTest(void) {
 		if (pid_a[i] == 0) {
 			if(i == 0) {
 				altprty(30);
-				for(;;) {
-					printf(1, "Process #%d\n",i);
+				for(j=0; j<100; j++) {
+					printf(1, "Process #%d: j=%d\n",i,j);
 					yield();
 				}
+				exit(0);
 			}
 			else if(i == 1) {
 				altprty(30);
-				for(;;) {
-					printf(1, "Process #%d \n",i);
+				for(j=0; j<100; j++) {
+					printf(1, "Process #%d: j=%d\n",i,j);
 					yield();
 				}
+				exit(0);
 			}
 			else if(i == 2) {
 				altprty(30);
-				for(;;) {
-					printf(1, "Process #%d \n",i);
+				for(j=0; j<100; j++) {
+					printf(1, "Process #%d: j=%d\n",i,j);
 					yield();
 				}
+				exit(0);
 			}
 			else if(i == 3) {
 				altprty(2);
-				for(;;) {
-					printf(1, "Process #%d\n",i);
+				for(j=0; j<100; j++) {
+					printf(1, "Process #%d: j=%d\n",i,j);
 					yield();
 				}
+				exit(0);
 			}
 			else {
 				altprty(2);
-				for(;;) {
-					printf(1, "Process #%d: with priority %d \n",i);
+				for(j=0; j<100; j++) {
+					printf(1, "Process #%d: j=%d\n",i,j);
 					yield();
 				}
+				exit(0);
 			}
 		}
 	}
 
-	wait(&status);
-
+	for(i = 0; i < 5; i++) {
+		waitpid(pid_a[i],&status,0);
+	}
 	return 0;
 }
 
