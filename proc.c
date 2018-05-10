@@ -267,6 +267,7 @@ exit(int status)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->parent == curproc){
       p->parent = initproc;
+
       if(p->state == ZOMBIE)
         wakeup1(initproc);
     }
@@ -388,7 +389,6 @@ waitpid(int pid, int *status, int options)
 int
 altprty(int nprty)
 {
-
   //Phillip: why use signed values?
   if(nprty < 0 || nprty > 31) {
     return -1;
@@ -406,7 +406,7 @@ altprty(int nprty)
 
   int found_new_highest = 0;
   if (old_priority > nprty) {
-    struct proc *p;  
+    struct proc *p;   
 
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
       if (p->priority + p->age > nprty + curproc->age) {
@@ -422,6 +422,41 @@ altprty(int nprty)
     }
   }
   release(&ptable.lock);
+  return 0;
+}
+
+//Lab2: 
+//  if calling process has a parent with higher priority, 
+//  the caller will receive their parent's priority 
+int
+inherit_prty() {
+  struct proc *curproc = myproc();
+  acquire(&ptable.lock);
+
+  if (curproc->parent->priority > curproc->priority)
+    curproc->priority = curproc->parent->priority;
+  release(&ptable.lock);
+
+  return 0;
+}
+
+//Lab2: 
+//  if calling process has any children with lower priority,
+//  they will always receive caller's priority
+int
+donate_prty() {
+  struct proc *p;
+  struct proc *curproc = myproc();
+
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if (p->parent != curproc) 
+      continue;
+    if (p->priority < curproc->priority)
+      p->priority = curproc->priority;    
+  }
+  release(&ptable.lock);
+
   return 0;
 }
 
@@ -441,16 +476,14 @@ scheduler(void)
   struct cpu *c = mycpu();
   c->proc = 0;
 
-  //FIXME: what happens if all processes in table have 0 priority?
-  //	we need to ensure that some process is still scheduled, in that case
   int max_priority = 0;
 
   for(;;){
     // Enable interrupts on this processor.
     sti();
     max_priority = 0; //resets value 
- 
-    // Loop over process table looking for highest priority value for
+    
+	// Loop over process table looking for highest priority value for
     // 	  a RUNNABLE process
     acquire(&ptable.lock);
     for(p2 = ptable.proc; p2 < &ptable.proc[NPROC]; p2++){

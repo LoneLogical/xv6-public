@@ -117,6 +117,8 @@ int 			waitpid(int pid, int *status, int options);
 // Lab02 Implementation
 int             altprty(int nprty);
 void            gettimestats(void);
+int             inherit_prty(void);
+int             donate_prty(void);
 // -------------------------------------
 int             fork(void);
 int             growproc(int);

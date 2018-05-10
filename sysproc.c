@@ -69,6 +69,20 @@ sys_altprty(void)
 	return altprty(new_priority);
 }
 
+//Lab02
+int
+sys_inherit_prty(void)
+{
+  return inherit_prty();
+}
+
+//Lab02
+int
+sys_donate_prty(void)
+{
+  return donate_prty();
+}
+
 int
 sys_kill(void)
 {

@@ -31,6 +31,8 @@ int altprty(int); //CS153 Lab02
 void yield(void); //CS153 Lab02
 int getprty(void); //CS153 Lab02
 void gettimestats(void); //CS153 Lab02
+int inherit_prty(void);
+int donate_prty(void);
 
 // ulib.c
 int stat(char*, struct stat*);

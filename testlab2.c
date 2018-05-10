@@ -2,6 +2,7 @@
 #include "user.h"
 
 int basicTest(void);
+int philTest(void);
 
 int main(int argc, char *argv[]) {
     printf(1, "####################################################\n");
@@ -10,9 +11,12 @@ int main(int argc, char *argv[]) {
     
 
     if (atoi(argv[1]) == 1)
-		basicTest();
+	basicTest();
+    else if (atoi(argv[1]) == 2)
+	philTest();
+    
     else 
-        printf(1, "\ntype \"lab1 1\" to test exit and wait, \"lab1 2\" to test waitpid \n");
+        printf(1, "\ntype \"lab2 1\" Andrew test \"lab2 2\" Phil test \n");
   
     // End of test
     exit(0);
@@ -74,5 +78,19 @@ int basicTest(void) {
 	}
 	return 0;
 }
+
+int philTest(void) {
+	int i;
+	for (i = 0; i < 5; i = i) {
+        	fork();
+		i++;
+
+		altprty(i);
+		donate_prty();
+		inherit_prty();
+	}
+	return 0;
+}
+
 
 
