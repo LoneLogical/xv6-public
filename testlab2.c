@@ -3,6 +3,7 @@
 
 int basicTest(void);
 int philTest(void);
+int test3(void);
 
 int main(int argc, char *argv[]) {
     printf(1, "####################################################\n");
@@ -14,7 +15,8 @@ int main(int argc, char *argv[]) {
 	basicTest();
     else if (atoi(argv[1]) == 2)
 	philTest();
-    
+    else if (atoi(argv[1]) == 3)
+	test3(); 
     else 
         printf(1, "\ntype \"lab2 1\" Andrew test \"lab2 2\" Phil test \n");
   
@@ -82,17 +84,61 @@ int basicTest(void) {
 int philTest(void) {
 	int i;
 	int pids[5] = {0, 0, 0, 0, 0};
+	//int status = 0;
+
+	printf(1, "\nparent pid: %d\n", getpid());
 
 	for (i = 0; i < 5; i++) {
         	pids[i] = fork();
 
-		if (pids[i] == 0)
+		printf(1, "\nrunning pid %d after fork\n", getpid());
+
+		//child
+		if (pids[i] == 0) {
+			inherit_prty();
+			printf(1, "\nchild inherited parents priority: %d , and is now scheduled\n", getprty());
 			break;
-			
+		}
+	
+		altprty(10 + i);
+		printf(1, "\nparent running with highest priority %d\n", getprty());	
 	}
+
+				
+	int status = 0;
+	for (i = 0; i < 5; i++) 
+		wait(&status);
+
 
 	return 0;
 }
+
+int test3(void) {
+	int pid = 0;
+	altprty(25);
+
+	printf(1, "\n Parent's pid %d \n", getpid());
+
+	pid = fork();
+
+	//parent
+	if (pid) {
+		printf(2, "\nparents's (# %d ) priority before donate %d\n", getpid(), getprty()); 
+		donate_prty();
+	
+		printf(1, "\n parent (# %d ) resuming after donation\n", getpid());	
+		int status = 0;
+		wait(&status);
+	}
+
+	else {
+		printf(2, "\nchild's (# %d) priority after donation %d\n", getpid(), getprty());	
+	}
+
+	return 0;
+}	
+
+
 
 
 
