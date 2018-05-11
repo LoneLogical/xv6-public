@@ -1,53 +1,45 @@
-Lab 1 Report
+Lab 2 Report
 Andrew Whitaker, Phillip Park
 
-1.) The following source files updated to provide the arguments for the updated system calls
- cat.c
+1) The following source files have been updated for Lab 2
  defs.h
- echo.c
- forktest.c
- grep.c
- init.c
- kill.c
- ln.c
- ls.c
- mkdir.c
  proc.c
  proc.h
- rm.c
- sh.c
- stressfs.c
  syscall.c
  syscall.h
  sysproc.c
- trap.c
  user.h
- usertests.c
  usys.S
- wc.c
- zombie.c
+ testlab2.c
+ lab2_test.c
 
-2.) This is the logging output from the test program which tests our waitpid function. We ensured that functions calling
-	waitpid() correctly return the exit status values returned from the exit of processes on which they are waiting.
+2) In our implementation, the highest priority is 31 and the lowest priority is 0.
+
+lab2_test.c was the provided in the course materials but has been altered to also test scheduling measurement outputs.
+  How to test: "./lab2_test.c"
+  The original code said that the program worked if processes finished in order of their priority. This should be true
+  in the case of this newer version, however, sometimes the processes get stuck performing an I/O task and don't 
+  finish in quite the correct order. What one should look at is the wait time of each process as it finishes. High priority
+  processes spend the least amount of time waiting in the queue and have high running time to total time ratios. This is
+  evidence of the scheduler giving high priority processes many chances to run over lower priority processes.
+
+  Sample output:
 
 
-####################################################
-# This program tests the correctness of your lab#1
-####################################################
-Step 2: testing waitpid(int pid, int* status, int options):
- - The is child with PID# 37 and I will exit with status 0
- - The is child with PID# 39 and I will exit with status 0
- - The is child with PID# 36 and I will exit with status 0
- - The is child with PID# 38 and I will exit with status 0
- -  - This is the parent: Now waiting for child with PID# 39
- - This is the parent: Child# 39 has exited with status 0
-Th - This is the parent: Now waiting for child with PID# 37
- - This is the parent: Child# 37 has exited with status 0
-e is child with PID# 40 and I will exit with status 0
- - This is the parent: Now waiting for child with PID# 38
- - This is the parent: Child# 38 has exited with status 0
- - This is the parent: Now waiting for child with PID# 36
- - This is the parent: Child# 36 has exited with status 0
- - This is the parent: Now waiting for child with PID# 40
- - This is the parent: Child# 40 has exited with status 0
+testlab2.c has two test cases: the first tests the aging process and the second tests inheritance of priority.
+  Test 1 - Tests aging and starvation
+  How to test: "./testlab2 1"
+  In this test, we have five processes: three have high priority (10) and two have low priority (2). In the beginning, the three with 
+  high priority should run many times (alternating since they all share same priority). But eventually the low priority processes
+  get to interject every once in a while since their priority gets increased. Once the high priority processes finish, then the low 
+  have full rein.
+
+  Sample output:
+
+  Test 2 - Testing Inheritance and Donation
+  How to test: "./testlab2 2"
+  In this test, we have
+
+  Sample output:
+
 

@@ -33,7 +33,7 @@ int basicTest(void) {
 		
 		if (pid_a[i] == 0) {
 			if(i == 0) {
-				altprty(30);
+				altprty(10);
 				for(j=0; j<100; j++) {
 					printf(1, "Process #%d: j=%d\n",i,j);
 					yield();
@@ -41,7 +41,7 @@ int basicTest(void) {
 				exit(0);
 			}
 			else if(i == 1) {
-				altprty(30);
+				altprty(10);
 				for(j=0; j<100; j++) {
 					printf(1, "Process #%d: j=%d\n",i,j);
 					yield();
@@ -49,7 +49,7 @@ int basicTest(void) {
 				exit(0);
 			}
 			else if(i == 2) {
-				altprty(30);
+				altprty(10);
 				for(j=0; j<100; j++) {
 					printf(1, "Process #%d: j=%d\n",i,j);
 					yield();
